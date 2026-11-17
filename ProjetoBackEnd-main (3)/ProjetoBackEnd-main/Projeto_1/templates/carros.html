@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Meus Carros{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Meus Carros</h1>
+    <a href="{{ url_for('car.novo_carro') }}" class="btn btn-primary">+ Cadastrar carro</a>
+</div>
+
+{% if carros %}
+<div class="row g-3">
+    {% for carro in carros %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">{{ carro.marca }} {{ carro.modelo }}</h5>
+                    {% if carro.status == 'vendido' %}
+                        <span class="badge bg-secondary">Vendido</span>
+                    {% else %}
+                        <span class="badge bg-success">Disponível</span>
+                    {% endif %}
+                </div>
+                <h4 class="text-primary">R$ {{ "{:,.2f}".format(carro.preco).replace(",", "X").replace(".", ",").replace("X", ".") }}</h4>
+                <ul class="list-unstyled mb-2 text-muted">
+                    <li>Ano: {{ carro.ano }}</li>
+                    <li>Km: {{ "{:,}".format(carro.quilometragem).replace(",", ".") }}</li>
+                    {% if carro.cor %}<li>Cor: {{ carro.cor }}</li>{% endif %}
+                </ul>
+                {% if carro.descricao %}
+                    <p class="card-text small">{{ carro.descricao }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent d-flex gap-2">
+                <a href="{{ url_for('car.editar_carro', car_id=carro.id) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <form action="{{ url_for('car.excluir_carro', car_id=carro.id) }}" method="post"
+                      onsubmit="return confirm('Remover este carro?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    Você ainda não cadastrou nenhum carro.
+    <a href="{{ url_for('car.novo_carro') }}" class="alert-link">Cadastre o primeiro</a>.
+</div>
+{% endif %}
+{% endblock %}
